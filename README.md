@@ -2,10 +2,8 @@
 
 > Catalogue microservice of **ShopLoc**, a multi-city local commerce platform with click & collect, loyalty and merchant tools.
 
-![CI](https://github.com/shoploc-athena/store-service/actions/workflows/ci.yml/badge.svg)
 ![Java](https://img.shields.io/badge/Java-21-orange)
 ![Spring Boot](https://img.shields.io/badge/Spring%20Boot-4-brightgreen)
-![License](https://img.shields.io/badge/license-MIT-blue)
 
 ## Table of contents
 
@@ -22,7 +20,6 @@
 11. [Eco-design](#eco-design)
 12. [Project status](#project-status)
 13. [Team](#team)
-14. [License](#license)
 
 ## About
 

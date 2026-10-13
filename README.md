@@ -5,7 +5,6 @@
 ![CI](https://github.com/shoploc-athena/store-service/actions/workflows/ci.yml/badge.svg)
 ![Java](https://img.shields.io/badge/Java-21-orange)
 ![Spring Boot](https://img.shields.io/badge/Spring%20Boot-4-brightgreen)
-![License](https://img.shields.io/badge/license-MIT-blue)
 
 ## Table of contents
 

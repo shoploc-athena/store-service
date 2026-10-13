@@ -20,7 +20,6 @@
 11. [Eco-design](#eco-design)
 12. [Project status](#project-status)
 13. [Team](#team)
-14. [License](#license)
 
 ## About
 

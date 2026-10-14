@@ -100,13 +100,15 @@ Never commit real secrets. Use environment variables or a local `.env` file (ign
 
 ## API
 
-> Planned endpoints, implemented step by step. See the project status below.
-
 | Method | Path | Description |
 |---|---|---|
 | GET | `/api/products` | List products |
 
-Full API documentation will be available in the project's GitHub Wiki.
+### Documentation
+
+- **Swagger UI** (interactive, available when the service is running): `http://localhost:8080/swagger-ui/index.html`
+- **OpenAPI description** (JSON): `http://localhost:8080/v3/api-docs`
+- **Technical documentation** (architecture, conventions, guides): [GitHub Wiki](https://github.com/shoploc-athena/store-service/wiki)
 
 ## Running the tests
 
@@ -151,7 +153,7 @@ This project follows the French [RGESN](https://ecoresponsable.numerique.gouv.fr
 | Item | Status |
 |---|---|
 | Project skeleton | In progress |
-| Product endpoint | Planned |
+| Product endpoint | Done |
 | Dockerfile | Planned |
 | CI pipeline | Planned |
 | Static analysis | Planned |

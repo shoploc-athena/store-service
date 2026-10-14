@@ -13,9 +13,13 @@ class ProductRepositoryTest {
     private ProductRepository repository;
 
     @Test
-    void savedProductCanBeFound() {
-        repository.save(new Product("Pain", "Whole wheat bread", 1.0));
+    void savedProductCanBeFoundWithItsValues() {
+        Product saved = repository.save(new Product("Pain", "Whole wheat bread", 1.0));
 
-        assertEquals(1, repository.findAll().size());
+        Product found = repository.findById(saved.getId()).orElseThrow();
+
+        assertEquals("Pain", found.getName());
+        assertEquals("Whole wheat bread", found.getDescription());
+        assertEquals(1.0, found.getPrice(), 0.001);
     }
 }

@@ -49,23 +49,33 @@ Other services:
 |---|---|
 | Language | Java 21 |
 | Framework | Spring Boot, Spring Web, Spring Data JPA |
-| Database | PostgreSQL (H2 in-memory for unit tests) |
+| Database | PostgreSQL (H2 in-memory for tests) |
+| API documentation | springdoc-openapi (Swagger UI) |
 | Build | Maven (Maven Wrapper included) |
-| Container | Docker (multi-stage build) |
-| CI/CD | GitHub Actions |
-| Quality | JUnit 5, Mockito, SonarCloud |
+| Container | Docker (multi-stage build), Docker Compose |
+| Tests | JUnit 5 |
+| CI/CD | GitHub Actions (planned) |
+| Static analysis | SonarCloud (planned) |
 
 ## Getting started
 
+There are three ways to run the service. Pick one.
+
+| Mode | Base URL |
+|---|---|
+| Locally with Maven | `http://localhost:8080` |
+| Docker Compose (recommended) | `http://localhost:8080` |
+| Docker image alone | `http://localhost:8081` |
+
 ### Prerequisites
 
-- Java 21 (JDK)
 - Git
-- Docker Desktop (to run PostgreSQL)
+- Java 21 (JDK), only for the local Maven mode
+- Docker Desktop
 
-No Maven installation is needed: use the wrapper (`mvnw`).
+No Maven installation is needed: use the wrapper (`mvnw`). On Windows, use Git Bash or WSL, or `mvnw.cmd` instead of `./mvnw`.
 
-### Run locally
+### Option 1: run locally with Maven
 
 ```bash
 # 1. Clone the repository
@@ -73,28 +83,61 @@ git clone https://github.com/shoploc-athena/store-service.git
 cd store-service
 
 # 2. Start a PostgreSQL database
-docker run --name store-db -e POSTGRES_DB=store_db -e POSTGRES_USER=shoploc \
-  -e POSTGRES_PASSWORD=shoploc -p 5432:5432 -d postgres:16-alpine
+docker run --name store-db -e POSTGRES_DB=store_db -e POSTGRES_USER=shoploc -e POSTGRES_PASSWORD=shoploc -p 5432:5432 -v store-db-data:/var/lib/postgresql/data -d postgres:16-alpine
 
 # 3. Start the service
-./mvnw spring-boot:run        # on Windows: mvnw.cmd spring-boot:run
+./mvnw spring-boot:run
 ```
 
-The service listens on `http://localhost:8080`.
+These credentials are for local development only. Never reuse them in a real environment.
 
-### Run with Docker Compose
+### Option 2: run with Docker Compose (recommended)
 
-The full stack (database, services, gateway) is started from the `shoploc-infra` repository.
+Docker Compose starts the database and the service together. The Compose file lives in the `shoploc-infra` repository, which builds the image from this repository. Clone both repositories **side by side** in the same parent folder:
+
+```bash
+git clone https://github.com/shoploc-athena/store-service.git
+git clone https://github.com/shoploc-athena/shoploc-infra.git
+cd shoploc-infra
+
+# Create your local environment file, then set a local password in it
+cp .env.example .env
+
+docker compose up --build
+```
+
+Stop the platform with `docker compose down`. Add `-v` only if you also want to delete the database data.
+
+The `.env` file contains secrets and is ignored by Git. Its variables are described in the [Configuration](#configuration) section.
+
+### Option 3: run the Docker image alone
+
+The image needs a database reachable on `localhost:5432` (see step 2 of Option 1).
+
+```bash
+docker build -t store-service:local .
+docker run --rm -p 8081:8080 -e DB_URL=jdbc:postgresql://host.docker.internal:5432/store_db store-service:local
+```
+
+`host.docker.internal` lets the container reach the database running on your machine. It works with Docker Desktop on Mac and Windows. On Linux, add `--add-host=host.docker.internal:host-gateway` to the `docker run` command.
 
 ## Configuration
 
-All settings can be overridden with environment variables.
+The service reads its database settings from environment variables. Defaults are provided for local development.
 
 | Variable | Default | Description |
 |---|---|---|
 | `DB_URL` | `jdbc:postgresql://localhost:5432/store_db` | JDBC URL of the database |
 | `DB_USER` | `shoploc` | Database user |
 | `DB_PASSWORD` | `shoploc` | Database password |
+
+With Docker Compose, you do not set these variables yourself. Compose builds them from the `.env` file of `shoploc-infra`:
+
+| `.env` variable | Description |
+|---|---|
+| `POSTGRES_DB` | Name of the database |
+| `POSTGRES_USER` | Database user |
+| `POSTGRES_PASSWORD` | Database password |
 
 Never commit real secrets. Use environment variables or a local `.env` file (ignored by Git).
 
@@ -106,9 +149,13 @@ Never commit real secrets. Use environment variables or a local `.env` file (ign
 
 ### Documentation
 
-- **Swagger UI** (interactive, available when the service is running): `http://localhost:8080/swagger-ui/index.html`
-- **OpenAPI description** (JSON): `http://localhost:8080/v3/api-docs`
+Use the base URL of your running mode (see [Getting started](#getting-started)).
+
+- **Swagger UI** (interactive): `<base URL>/swagger-ui/index.html`
+- **OpenAPI description** (JSON): `<base URL>/v3/api-docs`
 - **Technical documentation** (architecture, conventions, guides): [GitHub Wiki](https://github.com/shoploc-athena/store-service/wiki)
+
+For example, with Docker Compose: `http://localhost:8080/swagger-ui/index.html`. With the Docker image alone: `http://localhost:8081/swagger-ui/index.html`.
 
 ## Running the tests
 
@@ -122,10 +169,11 @@ Unit and repository tests run against an in-memory H2 database, so no PostgreSQL
 
 ```text
 store-service
-├── .github/                  # CI workflows, PR template
+├── .github/                  # PR template (CI workflows planned)
 ├── src/main/java/com/shoploc/store   # Application code
 ├── src/main/resources        # Configuration
 ├── src/test/java             # Tests
+├── .dockerignore             # Files excluded from the image build
 ├── Dockerfile                # Container image
 ├── pom.xml                   # Maven build
 └── README.md
@@ -136,13 +184,13 @@ store-service
 - `main`: stable code, protected, changes only through pull requests.
 - `develop`: integration branch.
 - `feature/<JIRA-KEY>-short-description`: one branch per task.
-- Commits follow [Conventional Commits](https://www.conventionalcommits.org/), for example `feat(catalog): add product list endpoint [SHOP-12]`.
+- Commits follow [Conventional Commits](https://www.conventionalcommits.org/), for example `feat(catalog): add product list endpoint [GLOP-12]`.
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) for the full workflow and review rules.
 
 ## CI/CD
 
-A GitHub Actions pipeline runs on every push and pull request: build, tests, static analysis. On `main`, it also builds a Docker image and publishes it to the GitHub Container Registry.
+A GitHub Actions pipeline is planned. On every push and pull request it will build the project, run the tests and run a static analysis. On `main`, it will also build a Docker image and publish it to the GitHub Container Registry.
 
 ## Eco-design
 
@@ -152,9 +200,11 @@ This project follows the French [RGESN](https://ecoresponsable.numerique.gouv.fr
 
 | Item | Status |
 |---|---|
-| Project skeleton | In progress |
+| Project skeleton | Done |
 | Product endpoint | Done |
-| Dockerfile | Planned |
+| API documentation (Swagger) | Done |
+| Dockerfile | Done |
+| Docker Compose (`shoploc-infra`) | In progress |
 | CI pipeline | Planned |
 | Static analysis | Planned |
 
@@ -166,4 +216,3 @@ Master MIAGE, Université de Lille.
 - Lan
 - Brunine
 - Angela
-

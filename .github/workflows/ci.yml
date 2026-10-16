@@ -1,0 +1,42 @@
+name: CI
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+
+permissions:
+  contents: read
+
+# Cancel older runs of the same branch to save resources
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0   # full history, needed by SonarCloud
+
+      - name: Set up Java 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+          cache: maven     # reuse downloaded dependencies
+
+      - name: Build and test
+        run: ./mvnw -B verify
+
+      - name: SonarCloud analysis
+        # Secrets are not available to pull requests from forks
+        if: github.event_name == 'push' && github.ref == 'refs/heads/develop'
+        run: ./mvnw -B org.sonarsource.scanner.maven:sonar-maven-plugin:sonar
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

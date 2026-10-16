@@ -1,7 +1,7 @@
 # store-service
 
 > Catalogue microservice of **ShopLoc**, a multi-city local commerce platform with click & collect, loyalty and merchant tools.
-
+![CI](https://github.com/shoploc-athena/store-service/actions/workflows/ci.yml/badge.svg)
 ![Java](https://img.shields.io/badge/Java-21-orange)
 ![Spring Boot](https://img.shields.io/badge/Spring%20Boot-4-brightgreen)
 
@@ -142,7 +142,7 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for the full workflow and review rules.
 
 ## CI/CD
 
-A GitHub Actions pipeline runs on every push and pull request: build, tests, static analysis. On `main`, it also builds a Docker image and publishes it to the GitHub Container Registry.
+A GitHub Actions pipeline runs on every push and pull request: build, tests and SonarCloud analysis. Publishing a Docker image is planned.
 
 ## Eco-design
 
@@ -155,8 +155,8 @@ This project follows the French [RGESN](https://ecoresponsable.numerique.gouv.fr
 | Project skeleton | In progress |
 | Product endpoint | Done |
 | Dockerfile | Planned |
-| CI pipeline | Planned |
-| Static analysis | Planned |
+| CI pipeline | Done |
+| Static analysis | Done |
 
 ## Team
 

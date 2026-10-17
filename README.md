@@ -20,6 +20,7 @@
 11. [Eco-design](#eco-design)
 12. [Project status](#project-status)
 13. [Team](#team)
+14. [Security](#security)
 
 ## About
 
@@ -53,9 +54,10 @@ Other services:
 | API documentation | springdoc-openapi (Swagger UI) |
 | Build | Maven (Maven Wrapper included) |
 | Container | Docker (multi-stage build), Docker Compose |
-| Tests | JUnit 5 |
-| CI/CD | GitHub Actions (planned) |
-| Static analysis | SonarCloud (planned) |
+| Tests | JUnit 5, JaCoCo (coverage) |
+| CI/CD | GitHub Actions |
+| Static analysis | SonarCloud |
+| Security | Dependabot, CodeQL, GitHub secret scanning |
 
 ## Getting started
 
@@ -169,7 +171,10 @@ Unit and repository tests run against an in-memory H2 database, so no PostgreSQL
 
 ```text
 store-service
-├── .github/                  # PR template (CI workflows planned)
+├── .github/
+│   ├── workflows/ci.yml      # CI pipeline
+│   ├── dependabot.yml        # Dependency updates
+│   └── pull_request_template.md                 
 ├── src/main/java/com/shoploc/store   # Application code
 ├── src/main/resources        # Configuration
 ├── src/test/java             # Tests
@@ -190,12 +195,17 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for the full workflow and review rules.
 
 ## CI/CD
 
-A GitHub Actions pipeline is planned. On every push and pull request it will build the project, run the tests and run a static analysis. On `main`, it will also build a Docker image and publish it to the GitHub Container Registry.
-A GitHub Actions pipeline runs on every push and pull request: build, tests and SonarCloud analysis. Publishing a Docker image is planned.
+A GitHub Actions pipeline (`.github/workflows/ci.yml`) runs on every pull request and on every push to `main` and `develop`: it builds the project and runs the tests with coverage (`./mvnw verify`). On every push to `develop`, it also sends the analysis to SonarQube Cloud, which is limited to the main branch of the project by its free plan. The `build` check must pass before a pull request can be merged.
+
+Publishing the Docker image to a registry is planned.
 
 ## Eco-design
 
 This project follows the French [RGESN](https://ecoresponsable.numerique.gouv.fr/publications/referentiel-general-ecoconception/) guidelines: minimal data collection, lightweight container images, CI workflows triggered only when needed, and no resources kept running when unused.
+
+## Security
+
+See [SECURITY.md](SECURITY.md) to report a vulnerability. The repository is monitored by Dependabot (dependencies, GitHub Actions and Docker images), CodeQL (code analysis) and GitHub secret scanning with push protection.
 
 ## Project status
 
@@ -205,12 +215,11 @@ This project follows the French [RGESN](https://ecoresponsable.numerique.gouv.fr
 | Product endpoint | Done |
 | API documentation (Swagger) | Done |
 | Dockerfile | Done |
-| Docker Compose (`shoploc-infra`) | In progress |
-| CI pipeline | Planned |
-| Static analysis | Planned |
-| Dockerfile | Planned |
+| Docker Compose (`shoploc-infra`) | Done |
 | CI pipeline | Done |
 | Static analysis | Done |
+| Security scanning | Done |
+| Authentication | Planned (`user-service`) |
 
 ## Team
 

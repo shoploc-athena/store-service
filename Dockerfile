@@ -1,5 +1,5 @@
 # Stage 1: build the application with Maven
-FROM maven:3-eclipse-temurin-21 AS build
+FROM maven:3-eclipse-temurin-26 AS build
 WORKDIR /app
 
 # Copy only pom.xml first so that dependencies are cached between builds

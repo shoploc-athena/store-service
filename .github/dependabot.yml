@@ -35,7 +35,8 @@ updates:
       # Java stays on version 21 until the team decides to upgrade
       - dependency-name: "eclipse-temurin"
         update-types: ["version-update:semver-major"]
+      # The Java version is part of the tag (3-eclipse-temurin-21):
+      # update this image by hand
       - dependency-name: "maven"
-        update-types: ["version-update:semver-major"]
     commit-message:
       prefix: "chore(docker)"

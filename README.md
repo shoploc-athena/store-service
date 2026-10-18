@@ -197,7 +197,7 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for the full workflow and review rules.
 
 A GitHub Actions pipeline (`.github/workflows/ci.yml`) runs on every pull request and on every push to `main` and `develop`: it builds the project and runs the tests with coverage (`./mvnw verify`). On every push to `develop`, it also sends the analysis to SonarQube Cloud, which is limited to the main branch of the project by its free plan. The `build` check must pass before a pull request can be merged.
 
-Publishing the Docker image to a registry is planned.
+On every push to `develop` and `main`, the pipeline also builds the Docker image and publishes it to the GitHub Container Registry (`ghcr.io/shoploc-athena/store-service`). Tags: the branch name (`develop` or `main`), the commit SHA, and `latest` for `main`.
 
 ## Eco-design
 
@@ -216,6 +216,7 @@ See [SECURITY.md](SECURITY.md) to report a vulnerability. The repository is moni
 | API documentation (Swagger) | Done |
 | Dockerfile | Done |
 | Docker Compose (`shoploc-infra`) | Done |
+| Docker image published to GHCR | Done |
 | CI pipeline | Done |
 | Static analysis | Done |
 | Security scanning | Done |

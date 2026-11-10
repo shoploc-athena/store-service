@@ -50,6 +50,7 @@ Write the summary in the imperative, in English.
 - Keep them small and focused on one topic.
 - Fill in the pull request template.
 - Link the Jira ticket.
+- Dependabot pull requests do not need a ticket key; they are reviewed and merged like any other pull request, after reading what they change.
 - The CI must be green before the review starts.
 - Reviewers check readability, tests, security, and the environmental impact of the change.
 

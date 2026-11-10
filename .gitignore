@@ -35,3 +35,8 @@ build/
 CLAUDE.md
 .claude/
 .cursor/
+
+# Local environment files
+.env
+.env.*
+!.env.example

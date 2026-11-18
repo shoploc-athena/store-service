@@ -31,6 +31,9 @@
 		<sonar.organization>shoploc-athena</sonar.organization>
 		<sonar.projectKey>shoploc-athena_store-service</sonar.projectKey>
 		<sonar.host.url>https://sonarcloud.io</sonar.host.url>
+		<sonar.host.url>https://sonarcloud.io</sonar.host.url>
+		<sonar.coverage.jacoco.xmlReportPaths>${project.build.directory}/site/jacoco/jacoco.xml</sonar.coverage.jacoco.xmlReportPaths>
+		<sonar.coverage.exclusions>**/*Application.java</sonar.coverage.exclusions>
 	</properties>
 	<dependencies>
 		<dependency>

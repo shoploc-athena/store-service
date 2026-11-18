@@ -1,6 +1,7 @@
 # store-service
 
 > Catalogue microservice of **ShopLoc**, a multi-city local commerce platform with click & collect, loyalty and merchant tools.
+> 
 ![CI](https://github.com/shoploc-athena/store-service/actions/workflows/ci.yml/badge.svg)
 ![Java](https://img.shields.io/badge/Java-21-orange)
 ![Spring Boot](https://img.shields.io/badge/Spring%20Boot-4-brightgreen)
@@ -50,11 +51,11 @@ Other services:
 |---|---|
 | Language | Java 21 |
 | Framework | Spring Boot, Spring Web, Spring Data JPA |
-| Database | PostgreSQL (H2 in-memory for tests) |
+| Database | PostgreSQL (Testcontainers for tests) |
 | API documentation | springdoc-openapi (Swagger UI) |
 | Build | Maven (Maven Wrapper included) |
 | Container | Docker (multi-stage build), Docker Compose |
-| Tests | JUnit 5, JaCoCo (coverage) |
+| Tests | JUnit 5, Testcontainers (PostgreSQL), JaCoCo (coverage) |
 | CI/CD | GitHub Actions |
 | Static analysis | SonarCloud |
 | Security | Dependabot, CodeQL, GitHub secret scanning |
@@ -161,11 +162,28 @@ For example, with Docker Compose: `http://localhost:8080/swagger-ui/index.html`.
 
 ## Running the tests
 
+**Prerequisite:** Docker must be running (Docker Desktop on macOS and Windows), because the
+tests use a real PostgreSQL started by [Testcontainers](https://testcontainers.com/).
+
 ```bash
 ./mvnw verify
 ```
 
-Unit and repository tests run against an in-memory H2 database, so no PostgreSQL is needed.
+Tests run against a disposable PostgreSQL container, not an in-memory database, so that
+migrations and constraints behave like in production. The first run downloads the
+PostgreSQL image, which can take a minute.
+
+How it works:
+
+- `TestcontainersConfiguration` starts one PostgreSQL container for the whole test run,
+  shared by all test classes, and connects Spring to it automatically.
+- The PostgreSQL version must match the one used in `shoploc-infra/docker-compose.yml`
+  (currently `postgres:16-alpine`).
+- `CityDatabases` creates one database per city (`store_lille`, `store_paris`) and starts
+  one application instance per city, to check that cities are isolated from each other
+  (see `ProductCityIsolationTest`).
+
+This setup is meant to be reused by the other services once they have a database.
 
 ## Project structure
 

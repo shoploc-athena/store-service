@@ -144,7 +144,7 @@ store-service
 - `main`: stable code, protected, changes only through pull requests.
 - `develop`: integration branch.
 - `feature/<JIRA-KEY>-short-description`: one branch per task.
-- Commits follow [Conventional Commits](https://www.conventionalcommits.org/), for example `feat(catalog): add product list endpoint [SHOP-12]`.
+- Commits follow [Conventional Commits](https://www.conventionalcommits.org/), for example `feat(catalog): add product list endpoint [GLOP-33]`.
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) for the full workflow and review rules.
 
@@ -162,9 +162,10 @@ This project follows the French [RGESN](https://ecoresponsable.numerique.gouv.fr
 |---|---|
 | Project skeleton | In progress |
 | Product endpoint | Done |
-| Dockerfile | Planned |
-| CI pipeline | Planned |
-| Static analysis | Planned |
+| Dockerfile | Done |
+| CI pipeline | Done |
+| Static analysis | Done |
+| Database migrations (Flyway) | In progress |
 
 ## Team
 

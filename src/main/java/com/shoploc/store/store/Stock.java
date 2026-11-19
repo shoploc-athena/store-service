@@ -1,6 +1,7 @@
 package com.shoploc.store.store;
 
 import jakarta.persistence.*;
+import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -34,13 +35,13 @@ public class Stock {
         this.articleId = articleId;
         this.availableQuantity = 0;
         this.reservedQuantity = 0;
-        this.createdAt = LocalDateTime.now();
-        this.updatedAt = LocalDateTime.now();
+        this.createdAt = LocalDateTime.now(Clock.systemUTC());
+        this.updatedAt = LocalDateTime.now(Clock.systemUTC());
     }
 
     @PreUpdate
     protected void onUpdate() {
-        this.updatedAt = LocalDateTime.now();
+        this.updatedAt = LocalDateTime.now(Clock.systemUTC());
     }
 
     public UUID getArticleId() { return articleId; }

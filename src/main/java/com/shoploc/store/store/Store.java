@@ -2,6 +2,7 @@ package com.shoploc.store.store;
 
 import jakarta.persistence.*;
 import java.math.BigDecimal;
+import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -56,13 +57,13 @@ public class Store {
         this.address = address;
         this.status = status;
         this.pickupExpiryDelayMin = pickupExpiryDelayMin;
-        this.createdAt = LocalDateTime.now();
-        this.updatedAt = LocalDateTime.now();
+        this.createdAt = LocalDateTime.now(Clock.systemUTC());
+        this.updatedAt = LocalDateTime.now(Clock.systemUTC());
     }
 
     @PreUpdate
     protected void onUpdate() {
-        this.updatedAt = LocalDateTime.now();
+        this.updatedAt = LocalDateTime.now(Clock.systemUTC());
     }
 
     public UUID getId() { return id; }

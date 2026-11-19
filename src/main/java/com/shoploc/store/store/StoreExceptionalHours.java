@@ -1,6 +1,7 @@
 package com.shoploc.store.store;
 
 import jakarta.persistence.*;
+import java.time.Clock;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -39,13 +40,13 @@ public class StoreExceptionalHours {
         this.startDate = startDate;
         this.endDate = endDate;
         this.isClosed = isClosed;
-        this.createdAt = LocalDateTime.now();
-        this.updatedAt = LocalDateTime.now();
+        this.createdAt = LocalDateTime.now(Clock.systemUTC());
+        this.updatedAt = LocalDateTime.now(Clock.systemUTC());
     }
 
     @PreUpdate
     protected void onUpdate() {
-        this.updatedAt = LocalDateTime.now();
+        this.updatedAt = LocalDateTime.now(Clock.systemUTC());
     }
 
     public UUID getId() { return id; }

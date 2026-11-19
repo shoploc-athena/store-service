@@ -1,6 +1,7 @@
 package com.shoploc.store.store;
 
 import jakarta.persistence.*;
+import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -49,13 +50,13 @@ public class Article {
         this.priceCents = priceCents;
         this.type = type;
         this.published = false;
-        this.createdAt = LocalDateTime.now();
-        this.updatedAt = LocalDateTime.now();
+        this.createdAt = LocalDateTime.now(Clock.systemUTC());
+        this.updatedAt = LocalDateTime.now(Clock.systemUTC());
     }
 
     @PreUpdate
     protected void onUpdate() {
-        this.updatedAt = LocalDateTime.now();
+        this.updatedAt = LocalDateTime.now(Clock.systemUTC());
     }
 
     public UUID getId() { return id; }

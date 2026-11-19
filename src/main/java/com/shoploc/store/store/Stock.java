@@ -36,7 +36,6 @@ public class Stock {
         this.reservedQuantity = 0;
         this.createdAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
-        this.version = 0;
     }
 
     @PreUpdate

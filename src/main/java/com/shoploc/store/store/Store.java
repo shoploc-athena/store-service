@@ -58,7 +58,6 @@ public class Store {
         this.pickupExpiryDelayMin = pickupExpiryDelayMin;
         this.createdAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
-        this.version = 0;
     }
 
     @PreUpdate

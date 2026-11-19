@@ -51,7 +51,6 @@ public class Article {
         this.published = false;
         this.createdAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
-        this.version = 0;
     }
 
     @PreUpdate

@@ -44,7 +44,6 @@ public class StockReservation {
         this.status = status;
         this.createdAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
-        this.version = 0;
     }
 
     @PreUpdate

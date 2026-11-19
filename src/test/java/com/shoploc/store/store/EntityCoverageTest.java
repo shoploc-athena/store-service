@@ -1,7 +1,8 @@
 package com.shoploc.store.store;
 
 import org.junit.jupiter.api.Test;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -11,7 +12,6 @@ class EntityCoverageTest {
     @Test
     void testStoreEntityLifecycle() {
         UUID ownerId = UUID.randomUUID();
-        UUID storeId = UUID.randomUUID();
         String name = "Test Store";
         String address = "123 Main St";
 
@@ -24,13 +24,12 @@ class EntityCoverageTest {
         assertEquals(30, store.getPickupExpiryDelayMin());
         assertNotNull(store.getCreatedAt());
         assertNotNull(store.getUpdatedAt());
-        assertNull(store.getVersion());
 
         store.setDescription("A store description");
         assertEquals("A store description", store.getDescription());
 
-        store.setStatus(StoreStatus.CLOSED);
-        assertEquals(StoreStatus.CLOSED, store.getStatus());
+        store.setStatus(StoreStatus.DISABLED);
+        assertEquals(StoreStatus.DISABLED, store.getStatus());
 
         store.setPickupExpiryDelayMin(45);
         assertEquals(45, store.getPickupExpiryDelayMin());
@@ -51,7 +50,6 @@ class EntityCoverageTest {
         assertEquals(false, article.getPublished());
         assertNotNull(article.getCreatedAt());
         assertNotNull(article.getUpdatedAt());
-        assertNull(article.getVersion());
 
         article.setDescription("Product description");
         assertEquals("Product description", article.getDescription());
@@ -74,7 +72,6 @@ class EntityCoverageTest {
         assertEquals(0, stock.getReservedQuantity());
         assertNotNull(stock.getCreatedAt());
         assertNotNull(stock.getUpdatedAt());
-        assertNull(stock.getVersion());
 
         stock.setAvailableQuantity(100);
         assertEquals(100, stock.getAvailableQuantity());
@@ -89,60 +86,69 @@ class EntityCoverageTest {
         UUID articleId = UUID.randomUUID();
         Integer quantity = 5;
 
-        StockReservation reservation = new StockReservation(orderId, articleId, quantity, ReservationStatus.PENDING);
+        StockReservation reservation = new StockReservation(orderId, articleId, quantity, ReservationStatus.RESERVED);
 
         assertEquals(orderId, reservation.getOrderId());
         assertEquals(articleId, reservation.getArticleId());
         assertEquals(quantity, reservation.getQuantity());
-        assertEquals(ReservationStatus.PENDING, reservation.getStatus());
+        assertEquals(ReservationStatus.RESERVED, reservation.getStatus());
         assertNotNull(reservation.getCreatedAt());
         assertNotNull(reservation.getUpdatedAt());
-        assertNull(reservation.getVersion());
 
-        reservation.setStatus(ReservationStatus.CONFIRMED);
-        assertEquals(ReservationStatus.CONFIRMED, reservation.getStatus());
+        reservation.setStatus(ReservationStatus.CONSUMED);
+        assertEquals(ReservationStatus.CONSUMED, reservation.getStatus());
     }
 
     @Test
     void testStoreOpeningHoursEntityLifecycle() {
         UUID storeId = UUID.randomUUID();
+        Integer dayOfWeek = 1;
+        LocalTime openTime = LocalTime.of(9, 0);
+        LocalTime closeTime = LocalTime.of(18, 0);
 
-        StoreOpeningHours hours = new StoreOpeningHours(storeId, "MONDAY", "09:00", "18:00");
+        StoreOpeningHours hours = new StoreOpeningHours(storeId, dayOfWeek, openTime, closeTime);
 
         assertEquals(storeId, hours.getStoreId());
-        assertEquals("MONDAY", hours.getDayOfWeek());
-        assertEquals("09:00", hours.getOpenTime());
-        assertEquals("18:00", hours.getCloseTime());
+        assertEquals(dayOfWeek, hours.getDayOfWeek());
+        assertEquals(openTime, hours.getOpenTime());
+        assertEquals(closeTime, hours.getCloseTime());
         assertNotNull(hours.getCreatedAt());
         assertNotNull(hours.getUpdatedAt());
-        assertNull(hours.getVersion());
+
+        LocalTime newOpen = LocalTime.of(10, 0);
+        hours.setOpenTime(newOpen);
+        assertEquals(newOpen, hours.getOpenTime());
     }
 
     @Test
     void testStoreExceptionalHoursEntityLifecycle() {
         UUID storeId = UUID.randomUUID();
+        LocalDate startDate = LocalDate.of(2026, 12, 25);
+        LocalDate endDate = LocalDate.of(2026, 12, 25);
+        Boolean isClosed = true;
 
-        StoreExceptionalHours exceptionalHours = new StoreExceptionalHours(storeId, "2026-12-25", "CLOSED", null, null);
+        StoreExceptionalHours exceptionalHours = new StoreExceptionalHours(storeId, startDate, endDate, isClosed);
 
         assertEquals(storeId, exceptionalHours.getStoreId());
-        assertEquals("2026-12-25", exceptionalHours.getDate());
-        assertEquals("CLOSED", exceptionalHours.getStatus());
-        assertNull(exceptionalHours.getOpenTime());
-        assertNull(exceptionalHours.getCloseTime());
+        assertEquals(startDate, exceptionalHours.getStartDate());
+        assertEquals(endDate, exceptionalHours.getEndDate());
+        assertEquals(isClosed, exceptionalHours.getIsClosed());
         assertNotNull(exceptionalHours.getCreatedAt());
         assertNotNull(exceptionalHours.getUpdatedAt());
-        assertNull(exceptionalHours.getVersion());
+
+        LocalDate newStart = LocalDate.of(2026, 12, 26);
+        exceptionalHours.setStartDate(newStart);
+        assertEquals(newStart, exceptionalHours.getStartDate());
     }
 
     @Test
     void testEnumValues() {
         assertNotNull(StoreStatus.ACTIVE);
-        assertNotNull(StoreStatus.CLOSED);
+        assertNotNull(StoreStatus.DISABLED);
         assertNotNull(ArticleType.PRODUCT);
         assertNotNull(ArticleType.SERVICE);
-        assertNotNull(ReservationStatus.PENDING);
-        assertNotNull(ReservationStatus.CONFIRMED);
-        assertNotNull(ReservationStatus.CANCELLED);
+        assertNotNull(ReservationStatus.RESERVED);
         assertNotNull(ReservationStatus.CONSUMED);
+        assertNotNull(ReservationStatus.RELEASED);
     }
 }

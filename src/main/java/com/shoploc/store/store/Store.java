@@ -2,8 +2,8 @@ package com.shoploc.store.store;
 
 import jakarta.persistence.*;
 import java.math.BigDecimal;
-import java.time.Clock;
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.util.UUID;
 
 @Entity
@@ -40,10 +40,10 @@ public class Store {
     private Integer pickupExpiryDelayMin;
 
     @Column(nullable = false, updatable = false)
-    private LocalDateTime createdAt;
+    private OffsetDateTime createdAt;
 
     @Column(nullable = false)
-    private LocalDateTime updatedAt;
+    private OffsetDateTime updatedAt;
 
     @Version
     private Integer version;
@@ -57,13 +57,13 @@ public class Store {
         this.address = address;
         this.status = status;
         this.pickupExpiryDelayMin = pickupExpiryDelayMin;
-        this.createdAt = LocalDateTime.now(Clock.systemUTC());
-        this.updatedAt = LocalDateTime.now(Clock.systemUTC());
+        this.createdAt = OffsetDateTime.now(ZoneOffset.UTC);
+        this.updatedAt = OffsetDateTime.now(ZoneOffset.UTC);
     }
 
     @PreUpdate
     protected void onUpdate() {
-        this.updatedAt = LocalDateTime.now(Clock.systemUTC());
+        this.updatedAt = OffsetDateTime.now(ZoneOffset.UTC);
     }
 
     public UUID getId() { return id; }

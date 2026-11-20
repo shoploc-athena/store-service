@@ -66,8 +66,8 @@ public class Article {
     public Long getPriceCents() { return priceCents; }
     public ArticleType getType() { return type; }
     public Boolean getPublished() { return published; }
-    public LocalDateTime getCreatedAt() { return createdAt; }
-    public LocalDateTime getUpdatedAt() { return updatedAt; }
+    public OffsetDateTime getCreatedAt() { return createdAt; }
+    public OffsetDateTime getUpdatedAt() { return updatedAt; }
     public Integer getVersion() { return version; }
 
     public void setDescription(String description) { this.description = description; }

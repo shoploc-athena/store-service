@@ -75,8 +75,8 @@ public class Store {
     public BigDecimal getLongitude() { return longitude; }
     public StoreStatus getStatus() { return status; }
     public Integer getPickupExpiryDelayMin() { return pickupExpiryDelayMin; }
-    public LocalDateTime getCreatedAt() { return createdAt; }
-    public LocalDateTime getUpdatedAt() { return updatedAt; }
+    public OffsetDateTime getCreatedAt() { return createdAt; }
+    public OffsetDateTime getUpdatedAt() { return updatedAt; }
     public Integer getVersion() { return version; }
 
     public void setDescription(String description) { this.description = description; }

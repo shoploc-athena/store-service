@@ -54,8 +54,8 @@ public class StoreOpeningHours {
     public Integer getDayOfWeek() { return dayOfWeek; }
     public LocalTime getOpenTime() { return openTime; }
     public LocalTime getCloseTime() { return closeTime; }
-    public LocalDateTime getCreatedAt() { return createdAt; }
-    public LocalDateTime getUpdatedAt() { return updatedAt; }
+    public OffsetDateTime getCreatedAt() { return createdAt; }
+    public OffsetDateTime getUpdatedAt() { return updatedAt; }
 
     public void setOpenTime(LocalTime openTime) { this.openTime = openTime; }
     public void setCloseTime(LocalTime closeTime) { this.closeTime = closeTime; }

@@ -47,8 +47,8 @@ public class Stock {
     public UUID getArticleId() { return articleId; }
     public Integer getAvailableQuantity() { return availableQuantity; }
     public Integer getReservedQuantity() { return reservedQuantity; }
-    public LocalDateTime getCreatedAt() { return createdAt; }
-    public LocalDateTime getUpdatedAt() { return updatedAt; }
+    public OffsetDateTime getCreatedAt() { return createdAt; }
+    public OffsetDateTime getUpdatedAt() { return updatedAt; }
     public Integer getVersion() { return version; }
 
     public void setAvailableQuantity(Integer availableQuantity) { this.availableQuantity = availableQuantity; }

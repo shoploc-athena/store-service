@@ -57,8 +57,8 @@ public class StockReservation {
     public UUID getArticleId() { return articleId; }
     public Integer getQuantity() { return quantity; }
     public ReservationStatus getStatus() { return status; }
-    public LocalDateTime getCreatedAt() { return createdAt; }
-    public LocalDateTime getUpdatedAt() { return updatedAt; }
+    public OffsetDateTime getCreatedAt() { return createdAt; }
+    public OffsetDateTime getUpdatedAt() { return updatedAt; }
     public Integer getVersion() { return version; }
 
     public void setStatus(ReservationStatus status) { this.status = status; }

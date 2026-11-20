@@ -3,6 +3,8 @@ package com.shoploc.store.store;
 import org.junit.jupiter.api.Test;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -22,8 +24,13 @@ class EntityCoverageTest {
         assertEquals(address, store.getAddress());
         assertEquals(StoreStatus.ACTIVE, store.getStatus());
         assertEquals(30, store.getPickupExpiryDelayMin());
+
         assertNotNull(store.getCreatedAt());
         assertNotNull(store.getUpdatedAt());
+        assertInstanceOf(OffsetDateTime.class, store.getCreatedAt());
+        assertInstanceOf(OffsetDateTime.class, store.getUpdatedAt());
+        assertEquals(ZoneOffset.UTC, store.getCreatedAt().getOffset());
+        assertEquals(ZoneOffset.UTC, store.getUpdatedAt().getOffset());
 
         store.setDescription("A store description");
         assertEquals("A store description", store.getDescription());
@@ -48,8 +55,13 @@ class EntityCoverageTest {
         assertEquals(priceCents, article.getPriceCents());
         assertEquals(ArticleType.PRODUCT, article.getType());
         assertEquals(false, article.getPublished());
+
         assertNotNull(article.getCreatedAt());
         assertNotNull(article.getUpdatedAt());
+        assertInstanceOf(OffsetDateTime.class, article.getCreatedAt());
+        assertInstanceOf(OffsetDateTime.class, article.getUpdatedAt());
+        assertEquals(ZoneOffset.UTC, article.getCreatedAt().getOffset());
+        assertEquals(ZoneOffset.UTC, article.getUpdatedAt().getOffset());
 
         article.setDescription("Product description");
         assertEquals("Product description", article.getDescription());
@@ -70,8 +82,13 @@ class EntityCoverageTest {
         assertEquals(articleId, stock.getArticleId());
         assertEquals(0, stock.getAvailableQuantity());
         assertEquals(0, stock.getReservedQuantity());
+
         assertNotNull(stock.getCreatedAt());
         assertNotNull(stock.getUpdatedAt());
+        assertInstanceOf(OffsetDateTime.class, stock.getCreatedAt());
+        assertInstanceOf(OffsetDateTime.class, stock.getUpdatedAt());
+        assertEquals(ZoneOffset.UTC, stock.getCreatedAt().getOffset());
+        assertEquals(ZoneOffset.UTC, stock.getUpdatedAt().getOffset());
 
         stock.setAvailableQuantity(100);
         assertEquals(100, stock.getAvailableQuantity());
@@ -92,8 +109,13 @@ class EntityCoverageTest {
         assertEquals(articleId, reservation.getArticleId());
         assertEquals(quantity, reservation.getQuantity());
         assertEquals(ReservationStatus.RESERVED, reservation.getStatus());
+
         assertNotNull(reservation.getCreatedAt());
         assertNotNull(reservation.getUpdatedAt());
+        assertInstanceOf(OffsetDateTime.class, reservation.getCreatedAt());
+        assertInstanceOf(OffsetDateTime.class, reservation.getUpdatedAt());
+        assertEquals(ZoneOffset.UTC, reservation.getCreatedAt().getOffset());
+        assertEquals(ZoneOffset.UTC, reservation.getUpdatedAt().getOffset());
 
         reservation.setStatus(ReservationStatus.CONSUMED);
         assertEquals(ReservationStatus.CONSUMED, reservation.getStatus());
@@ -112,8 +134,13 @@ class EntityCoverageTest {
         assertEquals(dayOfWeek, hours.getDayOfWeek());
         assertEquals(openTime, hours.getOpenTime());
         assertEquals(closeTime, hours.getCloseTime());
+
         assertNotNull(hours.getCreatedAt());
         assertNotNull(hours.getUpdatedAt());
+        assertInstanceOf(OffsetDateTime.class, hours.getCreatedAt());
+        assertInstanceOf(OffsetDateTime.class, hours.getUpdatedAt());
+        assertEquals(ZoneOffset.UTC, hours.getCreatedAt().getOffset());
+        assertEquals(ZoneOffset.UTC, hours.getUpdatedAt().getOffset());
 
         LocalTime newOpen = LocalTime.of(10, 0);
         hours.setOpenTime(newOpen);
@@ -133,8 +160,13 @@ class EntityCoverageTest {
         assertEquals(startDate, exceptionalHours.getStartDate());
         assertEquals(endDate, exceptionalHours.getEndDate());
         assertEquals(isClosed, exceptionalHours.getIsClosed());
+
         assertNotNull(exceptionalHours.getCreatedAt());
         assertNotNull(exceptionalHours.getUpdatedAt());
+        assertInstanceOf(OffsetDateTime.class, exceptionalHours.getCreatedAt());
+        assertInstanceOf(OffsetDateTime.class, exceptionalHours.getUpdatedAt());
+        assertEquals(ZoneOffset.UTC, exceptionalHours.getCreatedAt().getOffset());
+        assertEquals(ZoneOffset.UTC, exceptionalHours.getUpdatedAt().getOffset());
 
         LocalDate newStart = LocalDate.of(2026, 12, 26);
         exceptionalHours.setStartDate(newStart);

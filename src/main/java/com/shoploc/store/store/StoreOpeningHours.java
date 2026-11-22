@@ -1,9 +1,9 @@
 package com.shoploc.store.store;
 
 import jakarta.persistence.*;
-import java.time.Clock;
 import java.time.LocalTime;
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.util.UUID;
 
 @Entity
@@ -27,10 +27,10 @@ public class StoreOpeningHours {
     private LocalTime closeTime;
 
     @Column(nullable = false, updatable = false)
-    private LocalDateTime createdAt;
+    private OffsetDateTime createdAt;
 
     @Column(nullable = false)
-    private LocalDateTime updatedAt;
+    private OffsetDateTime updatedAt;
 
     protected StoreOpeningHours() {
     }
@@ -40,13 +40,13 @@ public class StoreOpeningHours {
         this.dayOfWeek = dayOfWeek;
         this.openTime = openTime;
         this.closeTime = closeTime;
-        this.createdAt = LocalDateTime.now(Clock.systemUTC());
-        this.updatedAt = LocalDateTime.now(Clock.systemUTC());
+        this.createdAt = OffsetDateTime.now(ZoneOffset.UTC);
+        this.updatedAt = OffsetDateTime.now(ZoneOffset.UTC);
     }
 
     @PreUpdate
     protected void onUpdate() {
-        this.updatedAt = LocalDateTime.now(Clock.systemUTC());
+        this.updatedAt = OffsetDateTime.now(ZoneOffset.UTC);
     }
 
     public UUID getId() { return id; }
@@ -54,8 +54,8 @@ public class StoreOpeningHours {
     public Integer getDayOfWeek() { return dayOfWeek; }
     public LocalTime getOpenTime() { return openTime; }
     public LocalTime getCloseTime() { return closeTime; }
-    public LocalDateTime getCreatedAt() { return createdAt; }
-    public LocalDateTime getUpdatedAt() { return updatedAt; }
+    public OffsetDateTime getCreatedAt() { return createdAt; }
+    public OffsetDateTime getUpdatedAt() { return updatedAt; }
 
     public void setOpenTime(LocalTime openTime) { this.openTime = openTime; }
     public void setCloseTime(LocalTime closeTime) { this.closeTime = closeTime; }

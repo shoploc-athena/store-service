@@ -1,8 +1,8 @@
 package com.shoploc.store.store;
 
 import jakarta.persistence.*;
-import java.time.Clock;
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.util.UUID;
 
 @Entity
@@ -20,10 +20,10 @@ public class Stock {
     private Integer reservedQuantity;
 
     @Column(nullable = false, updatable = false)
-    private LocalDateTime createdAt;
+    private OffsetDateTime createdAt;
 
     @Column(nullable = false)
-    private LocalDateTime updatedAt;
+    private OffsetDateTime updatedAt;
 
     @Version
     private Integer version;
@@ -35,20 +35,20 @@ public class Stock {
         this.articleId = articleId;
         this.availableQuantity = 0;
         this.reservedQuantity = 0;
-        this.createdAt = LocalDateTime.now(Clock.systemUTC());
-        this.updatedAt = LocalDateTime.now(Clock.systemUTC());
+        this.createdAt = OffsetDateTime.now(ZoneOffset.UTC);
+        this.updatedAt = OffsetDateTime.now(ZoneOffset.UTC);
     }
 
     @PreUpdate
     protected void onUpdate() {
-        this.updatedAt = LocalDateTime.now(Clock.systemUTC());
+        this.updatedAt = OffsetDateTime.now(ZoneOffset.UTC);
     }
 
     public UUID getArticleId() { return articleId; }
     public Integer getAvailableQuantity() { return availableQuantity; }
     public Integer getReservedQuantity() { return reservedQuantity; }
-    public LocalDateTime getCreatedAt() { return createdAt; }
-    public LocalDateTime getUpdatedAt() { return updatedAt; }
+    public OffsetDateTime getCreatedAt() { return createdAt; }
+    public OffsetDateTime getUpdatedAt() { return updatedAt; }
     public Integer getVersion() { return version; }
 
     public void setAvailableQuantity(Integer availableQuantity) { this.availableQuantity = availableQuantity; }

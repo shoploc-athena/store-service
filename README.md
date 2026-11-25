@@ -77,7 +77,10 @@ cd store-service
 docker run --name store-db -e POSTGRES_DB=store_db -e POSTGRES_USER=shoploc \
   -e POSTGRES_PASSWORD=shoploc -p 5432:5432 -d postgres:16-alpine
 
-# 3. Start the service
+# 3. Set CITY and JWT_SECRET to the same values used by user-service.
+#    JWT_SECRET must contain at least 32 UTF-8 bytes.
+
+# 4. Start the service
 ./mvnw spring-boot:run        # on Windows: mvnw.cmd spring-boot:run
 ```
 
@@ -103,6 +106,8 @@ All settings can be overridden with environment variables.
 | `DB_URL` | `jdbc:postgresql://localhost:5432/store_db` | JDBC URL of the database |
 | `DB_USER` | `shoploc` | Database user |
 | `DB_PASSWORD` | `shoploc` | Database password |
+| `CITY` | Required | City accepted in the authentication token (for example `lille`) |
+| `JWT_SECRET` | Required | Shared HS256 secret used by `user-service`, at least 32 UTF-8 bytes |
 
 Never commit real secrets. Use environment variables or a local `.env` file (ignored by Git).
 
@@ -111,6 +116,21 @@ Never commit real secrets. Use environment variables or a local `.env` file (ign
 | Method | Path | Description |
 |---|---|---|
 | GET | `/api/products` | List products |
+| POST | `/api/stores/{storeId}/articles` | Create an article and, for products, its initial stock |
+| PUT | `/api/stores/{storeId}/articles/{id}` | Update an article, including publication status |
+| GET | `/api/stores/{storeId}/articles?page=0&size=20` | List the owner's published and unpublished articles |
+
+Article endpoints require a bearer JWT issued for the configured city by `user-service` and a merchant
+whose user ID matches the store owner. Create requests contain `name` (1–150 characters), optional
+`description`, `priceCents` (non-negative integer), `type` (`PRODUCT` or `SERVICE`) and optional
+`published` (default `false`). Products may include `initialStock` (non-negative integer, default `0`);
+services must not include it. Names are unique within each store.
+
+Updates contain `name`, `description`, `priceCents`, `published`, and the current `version` from the
+previous response; the article type cannot be changed. Duplicate names and stale versions return `409`.
+There is no delete endpoint: set `published` to `false` to unpublish. Product responses include
+`availableQuantity` and `reservedQuantity`. Authentication failures return `401`; a merchant who is
+not the owner receives `403`. Prices are stored as integer cents.
 
 ### Documentation
 

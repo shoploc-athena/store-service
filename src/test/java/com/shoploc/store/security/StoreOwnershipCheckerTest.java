@@ -28,9 +28,10 @@ class StoreOwnershipCheckerTest {
     @Test
     void unknownStoreGivesNotFound() {
         UUID storeId = UUID.randomUUID();
+        Jwt token = tokenOf(UUID.randomUUID());
         when(storeRepository.findById(storeId)).thenReturn(Optional.empty());
 
-        assertThatThrownBy(() -> checker.requireOwnedStore(storeId, tokenOf(UUID.randomUUID())))
+        assertThatThrownBy(() -> checker.requireOwnedStore(storeId, token))
                 .isInstanceOf(StoreNotFoundException.class);
     }
 
@@ -38,9 +39,10 @@ class StoreOwnershipCheckerTest {
     void storeOfAnotherOwnerGivesAccessDenied() {
         UUID storeId = UUID.randomUUID();
         Store store = new Store(UUID.randomUUID(), "Shop", "1 rue de Lille", StoreStatus.ACTIVE, 30);
+        Jwt token = tokenOf(UUID.randomUUID());
         when(storeRepository.findById(storeId)).thenReturn(Optional.of(store));
 
-        assertThatThrownBy(() -> checker.requireOwnedStore(storeId, tokenOf(UUID.randomUUID())))
+        assertThatThrownBy(() -> checker.requireOwnedStore(storeId, token))
                 .isInstanceOf(AccessDeniedException.class);
     }
 

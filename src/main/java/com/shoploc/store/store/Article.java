@@ -70,6 +70,7 @@ public class Article {
     public OffsetDateTime getUpdatedAt() { return updatedAt; }
     public Integer getVersion() { return version; }
 
+    public void setName(String name) { this.name = name; }
     public void setDescription(String description) { this.description = description; }
     public void setPriceCents(Long priceCents) { this.priceCents = priceCents; }
     public void setPublished(Boolean published) { this.published = published; }

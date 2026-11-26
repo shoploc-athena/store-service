@@ -12,10 +12,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
+import java.util.List;
 import java.util.UUID;
 import javax.crypto.spec.SecretKeySpec;
 import com.nimbusds.jose.jwk.source.ImmutableSecret;
 import com.shoploc.store.TestcontainersConfiguration;
+import jakarta.servlet.http.Cookie;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +26,10 @@ import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.context.annotation.Import;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockHttpSession;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.jose.jws.MacAlgorithm;
 import org.springframework.security.oauth2.jwt.JwsHeader;
 import org.springframework.security.oauth2.jwt.JwtClaimsSet;
@@ -180,6 +186,23 @@ class ArticleApiTest {
         }
         mvc.perform(get(path).header("Authorization", bearer(token(owner, "CUSTOMER", "lille",
                 Instant.now().plusSeconds(600), SECRET)))).andExpect(status().isForbidden());
+    }
+
+    @Test
+    void cookiesSessionsAndQueryParametersCannotAuthenticateArticleRequests() throws Exception {
+        var session = new MockHttpSession();
+        var context = SecurityContextHolder.createEmptyContext();
+        context.setAuthentication(UsernamePasswordAuthenticationToken.authenticated(
+                owner.toString(), null, List.of(new SimpleGrantedAuthority("ROLE_MERCHANT"))));
+        session.setAttribute("SPRING_SECURITY_CONTEXT", context);
+
+        mvc.perform(post(path).session(session).cookie(new Cookie("access_token", ownerToken))
+                .param("access_token", ownerToken).contentType(MediaType.APPLICATION_JSON).content(PRODUCT))
+                .andExpect(status().isUnauthorized());
+        mvc.perform(get(path).cookie(new Cookie("access_token", ownerToken)).param("access_token", ownerToken))
+                .andExpect(status().isUnauthorized());
+        assertThat(articles.findByStoreId(storeId, org.springframework.data.domain.Pageable.unpaged()).getTotalElements())
+                .isZero();
     }
 
     @Test

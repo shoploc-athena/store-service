@@ -58,9 +58,9 @@ public class ArticleController {
             throw badRequest("initialStock is forbidden for services");
         }
         int stock = request.initialStock() == null ? 0 : nonNegativeInt(request.initialStock(), "initialStock");
-        boolean published = request.published() == null ? false : requiredBoolean(request.published(), "published");
-        var article = service.create(storeId, UUID.fromString(jwt.getSubject()), name, optionalText(request.description()),
-                price, type, published, stock);
+        boolean published = request.published() != null && requiredBoolean(request.published(), "published");
+        var details = new ArticleService.CreateDetails(name, optionalText(request.description()), price, type, published, stock);
+        var article = service.create(storeId, UUID.fromString(jwt.getSubject()), details);
         URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}")
                 .buildAndExpand(article.id()).toUri();
         return ResponseEntity.created(location).body(article);
@@ -79,9 +79,10 @@ public class ArticleController {
         if (request.type() != null) {
             throw badRequest("type cannot be changed and published is required");
         }
-        return service.update(storeId, id, UUID.fromString(jwt.getSubject()), validName(request.name()),
+        var details = new ArticleService.UpdateDetails(validName(request.name()),
                 optionalText(request.description()), nonNegativeLong(request.priceCents(), "priceCents"),
                 requiredBoolean(request.published(), "published"), nonNegativeInt(request.version(), "version"));
+        return service.update(storeId, id, UUID.fromString(jwt.getSubject()), details);
     }
 
     @GetMapping

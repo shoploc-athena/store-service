@@ -54,7 +54,7 @@ public class ArticleSecurityConfig {
     }
 
     @Bean
-    SecurityFilterChain articleSecurity(HttpSecurity http) throws Exception {
+    SecurityFilterChain articleSecurity(HttpSecurity http) {
         JwtAuthenticationConverter converter = new JwtAuthenticationConverter();
         converter.setJwtGrantedAuthoritiesConverter(jwt -> "MERCHANT".equals(jwt.getClaimAsString("role"))
                 ? List.of(new SimpleGrantedAuthority("ROLE_MERCHANT")) : List.of());

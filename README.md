@@ -132,6 +132,12 @@ There is no delete endpoint: set `published` to `false` to unpublish. Product re
 `availableQuantity` and `reservedQuantity`. Authentication failures return `401`; a merchant who is
 not the owner receives `403`. Prices are stored as integer cents.
 
+The article API is stateless and accepts bearer tokens only in the `Authorization` header. It does not
+authenticate using cookies, HTTP sessions, or token query parameters, so browsers do not automatically
+attach authentication credentials to cross-site requests. CSRF protection is disabled for these endpoints
+on that basis. If cookie- or session-based authentication is added, CSRF protection must be reconsidered
+before enabling it.
+
 ### Documentation
 
 - **Swagger UI** (interactive, available when the service is running): `http://localhost:8080/swagger-ui/index.html`

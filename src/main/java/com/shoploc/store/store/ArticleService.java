@@ -24,35 +24,33 @@ public class ArticleService {
     }
 
     @Transactional
-    public ArticleResponse create(UUID storeId, UUID ownerId, String name, String description,
-                                  long priceCents, ArticleType type, boolean published, int initialStock) {
+    public ArticleResponse create(UUID storeId, UUID ownerId, CreateDetails details) {
         requireOwner(storeId, ownerId);
-        Article article = new Article(storeId, name, priceCents, type);
-        article.setDescription(description);
-        article.setPublished(published);
+        Article article = new Article(storeId, details.name(), details.priceCents(), details.type());
+        article.setDescription(details.description());
+        article.setPublished(details.published());
         article = articles.saveAndFlush(article);
         Stock stock = null;
-        if (type == ArticleType.PRODUCT) {
+        if (details.type() == ArticleType.PRODUCT) {
             stock = new Stock(article.getId());
-            stock.setAvailableQuantity(initialStock);
+            stock.setAvailableQuantity(details.initialStock());
             stock = stocks.saveAndFlush(stock);
         }
         return response(article, stock);
     }
 
     @Transactional
-    public ArticleResponse update(UUID storeId, UUID articleId, UUID ownerId, String name,
-                                  String description, long priceCents, boolean published, int version) {
+    public ArticleResponse update(UUID storeId, UUID articleId, UUID ownerId, UpdateDetails details) {
         requireOwner(storeId, ownerId);
         Article article = articles.findByIdAndStoreId(articleId, storeId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Article not found"));
-        if (!article.getVersion().equals(version)) {
+        if (!article.getVersion().equals(details.version())) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Stale article version");
         }
-        article.setName(name);
-        article.setDescription(description);
-        article.setPriceCents(priceCents);
-        article.setPublished(published);
+        article.setName(details.name());
+        article.setDescription(details.description());
+        article.setPriceCents(details.priceCents());
+        article.setPublished(details.published());
         article = articles.saveAndFlush(article);
         return response(article, stockFor(article));
     }
@@ -88,6 +86,13 @@ public class ArticleService {
                 article.getDescription(), article.getPriceCents(), article.getType(), article.getPublished(),
                 article.getVersion(), stock == null ? null : stock.getAvailableQuantity(),
                 stock == null ? null : stock.getReservedQuantity());
+    }
+
+    public record CreateDetails(String name, String description, long priceCents, ArticleType type,
+                                boolean published, int initialStock) {
+    }
+
+    public record UpdateDetails(String name, String description, long priceCents, boolean published, int version) {
     }
 
     public record ArticleResponse(UUID id, UUID storeId, String name, String description, long priceCents,

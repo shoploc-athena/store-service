@@ -119,7 +119,7 @@ class ArticleApiTest {
     }
 
     @Test
-    void failedStockCreationRollsBackArticle() throws Exception {
+    void failedStockCreationRollsBackArticle() {
         doThrow(new DataIntegrityViolationException("simulated stock failure")).when(stockSpy).saveAndFlush(any(Stock.class));
         assertThatThrownBy(() -> mvc.perform(post(path).header("Authorization", bearer(ownerToken))
                 .contentType(MediaType.APPLICATION_JSON).content(PRODUCT)))

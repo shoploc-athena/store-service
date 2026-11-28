@@ -13,13 +13,14 @@
 4. [Getting started](#getting-started)
 5. [Configuration](#configuration)
 6. [API](#api)
-7. [Running the tests](#running-the-tests)
-8. [Project structure](#project-structure)
-9. [Branching and commits](#branching-and-commits)
-10. [CI/CD](#cicd)
-11. [Eco-design](#eco-design)
-12. [Project status](#project-status)
-13. [Team](#team)
+7. [Authentication](#authentication)
+8. [Running the tests](#running-the-tests)
+9. [Project structure](#project-structure)
+10. [Branching and commits](#branching-and-commits)
+11. [CI/CD](#cicd)
+12. [Eco-design](#eco-design)
+13. [Project status](#project-status)
+14. [Team](#team)
 
 ## About
 
@@ -111,6 +112,33 @@ Never commit real secrets. Use environment variables or a local `.env` file (ign
 | Method | Path | Description |
 |---|---|---|
 | GET | `/api/products` | List products |
+
+
+## Authentication
+
+The service checks itself the JWT issued by the user-service (HS256, no call to the user-service).
+A token is refused with `401` if it is missing, expired, modified, or issued for another city.
+
+| Route | Access |
+|---|---|
+| `GET /api/products/**`, `GET /api/stores/{id}`, `GET /api/stores/{id}/opening-hours`, `/actuator/health` | Public |
+| Other routes under `/api/stores/**` | `ROLE_MERCHANT`, and the store must belong to the caller (`403` otherwise, `404` if it does not exist) |
+| Any other route | Valid token |
+
+Errors are returned as `application/problem+json` with a `code` field (`UNAUTHORIZED`, `FORBIDDEN`, `STORE_NOT_FOUND`).
+
+In Swagger (`/swagger-ui.html`), use the **Authorize** button and paste the token.
+
+To protect a store route, call `StoreOwnershipChecker.requireOwnedStore(storeId, jwt)` in the controller
+(`jwt` is a method parameter annotated with `@AuthenticationPrincipal`).
+
+Required environment variables (the service refuses to start without them):
+
+| Variable | Description |
+|---|---|
+| `JWT_SECRET` | Secret shared by all services, at least 32 bytes. Never commit it. |
+| `CITY` | City of this instance. Tokens issued for another city are refused. |
+
 
 ### Documentation
 

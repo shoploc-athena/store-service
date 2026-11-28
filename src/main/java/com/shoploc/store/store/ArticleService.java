@@ -4,28 +4,30 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import com.shoploc.store.security.StoreOwnershipChecker;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 @Service
 public class ArticleService {
-    private final StoreRepository stores;
+    private final StoreOwnershipChecker ownership;
     private final ArticleRepository articles;
     private final StockRepository stocks;
 
-    public ArticleService(StoreRepository stores, ArticleRepository articles, StockRepository stocks) {
-        this.stores = stores;
+    public ArticleService(StoreOwnershipChecker ownership, ArticleRepository articles, StockRepository stocks) {
+        this.ownership = ownership;
         this.articles = articles;
         this.stocks = stocks;
     }
 
     @Transactional
-    public ArticleResponse create(UUID storeId, UUID ownerId, CreateDetails details) {
-        requireOwner(storeId, ownerId);
+    public ArticleResponse create(UUID storeId, Jwt jwt, CreateDetails details) {
+        ownership.requireOwnedStore(storeId, jwt);
         Article article = new Article(storeId, details.name(), details.priceCents(), details.type());
         article.setDescription(details.description());
         article.setPublished(details.published());
@@ -40,8 +42,8 @@ public class ArticleService {
     }
 
     @Transactional
-    public ArticleResponse update(UUID storeId, UUID articleId, UUID ownerId, UpdateDetails details) {
-        requireOwner(storeId, ownerId);
+    public ArticleResponse update(UUID storeId, UUID articleId, Jwt jwt, UpdateDetails details) {
+        ownership.requireOwnedStore(storeId, jwt);
         Article article = articles.findByIdAndStoreId(articleId, storeId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Article not found"));
         if (!article.getVersion().equals(details.version())) {
@@ -56,22 +58,14 @@ public class ArticleService {
     }
 
     @Transactional(readOnly = true)
-    public Page<ArticleResponse> list(UUID storeId, UUID ownerId, Pageable pageable) {
-        requireOwner(storeId, ownerId);
+    public Page<ArticleResponse> list(UUID storeId, Jwt jwt, Pageable pageable) {
+        ownership.requireOwnedStore(storeId, jwt);
         Page<Article> page = articles.findByStoreId(storeId, pageable);
         var productIds = page.getContent().stream().filter(a -> a.getType() == ArticleType.PRODUCT)
                 .map(Article::getId).toList();
         Map<UUID, Stock> stockByArticle = stocks.findAllById(productIds).stream()
                 .collect(Collectors.toMap(Stock::getArticleId, Function.identity()));
         return page.map(article -> response(article, stockByArticle.get(article.getId())));
-    }
-
-    private void requireOwner(UUID storeId, UUID ownerId) {
-        Store store = stores.findById(storeId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Store not found"));
-        if (!store.getOwnerId().equals(ownerId)) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Not the store owner");
-        }
     }
 
     private Stock stockFor(Article article) {

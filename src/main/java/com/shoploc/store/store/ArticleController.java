@@ -60,7 +60,7 @@ public class ArticleController {
         int stock = request.initialStock() == null ? 0 : nonNegativeInt(request.initialStock(), "initialStock");
         boolean published = request.published() != null && requiredBoolean(request.published(), "published");
         var details = new ArticleService.CreateDetails(name, optionalText(request.description()), price, type, published, stock);
-        var article = service.create(storeId, UUID.fromString(jwt.getSubject()), details);
+        var article = service.create(storeId, jwt, details);
         URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}")
                 .buildAndExpand(article.id()).toUri();
         return ResponseEntity.created(location).body(article);
@@ -82,7 +82,7 @@ public class ArticleController {
         var details = new ArticleService.UpdateDetails(validName(request.name()),
                 optionalText(request.description()), nonNegativeLong(request.priceCents(), "priceCents"),
                 requiredBoolean(request.published(), "published"), nonNegativeInt(request.version(), "version"));
-        return service.update(storeId, id, UUID.fromString(jwt.getSubject()), details);
+        return service.update(storeId, id, jwt, details);
     }
 
     @GetMapping
@@ -93,7 +93,7 @@ public class ArticleController {
             @ApiResponse(responseCode = "404", description = "Store not found")})
     public Page<ArticleService.ArticleResponse> list(@PathVariable UUID storeId, @AuthenticationPrincipal Jwt jwt,
             @ParameterObject @PageableDefault(size = 20, sort = "id") Pageable pageable) {
-        return service.list(storeId, UUID.fromString(jwt.getSubject()), pageable);
+        return service.list(storeId, jwt, pageable);
     }
 
     @ExceptionHandler(OptimisticLockingFailureException.class)

@@ -44,7 +44,7 @@ import tools.jackson.databind.json.JsonMapper;
 @AutoConfigureMockMvc
 @Import(TestcontainersConfiguration.class)
 class ArticleApiTest {
-    private static final String SECRET = "integration-test-key-not-for-production";
+    private static final String SECRET = "test-secret-test-secret-test-secret-test";
     private static final JsonMapper JSON = JsonMapper.builder().build();
     private static final String PRODUCT = """
             {"name":"Bread","description":"Fresh","priceCents":125,"type":"PRODUCT","initialStock":7}
@@ -171,6 +171,11 @@ class ArticleApiTest {
                 .content(update)).andExpect(status().isForbidden());
         mvc.perform(get("/api/stores/" + UUID.randomUUID() + "/articles").header("Authorization", bearer(ownerToken)))
                 .andExpect(status().isNotFound());
+        mvc.perform(post("/api/stores/" + UUID.randomUUID() + "/articles").header("Authorization", bearer(ownerToken))
+                .contentType(MediaType.APPLICATION_JSON).content(PRODUCT)).andExpect(status().isNotFound());
+        mvc.perform(put("/api/stores/" + UUID.randomUUID() + "/articles/" + UUID.randomUUID())
+                .header("Authorization", bearer(ownerToken)).contentType(MediaType.APPLICATION_JSON)
+                .content(update)).andExpect(status().isNotFound());
         mvc.perform(put(path + "/" + UUID.randomUUID()).header("Authorization", bearer(ownerToken))
                 .contentType(MediaType.APPLICATION_JSON).content(update)).andExpect(status().isNotFound());
     }
